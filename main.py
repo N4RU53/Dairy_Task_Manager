@@ -39,7 +39,7 @@ def command(text, window):
     elif text == 'reset':
         for i in range(5):
             num = str(i+1)
-            window['task' + num].update(button_color='#0099ff') 
+            window['task' + num].update(button_color='#0077ff') 
         print(' タスクの進捗をリセットしました\n')
 
     elif text == 'help':
@@ -114,7 +114,7 @@ helps = '''
 term = [
             [sg.Output(pad=((0,0),(0,0)),
                         text_color='#ffffff',
-                        background_color='#2b0020',
+                        background_color='#4c3344',
                         echo_stdout_stderr=True,
                         font=('Arial',11),
                         key='output')],
@@ -134,33 +134,33 @@ tasks = sg.Frame('',
                                 expand_x=True,
                                 key='task1',
                                 font=('Arial',18),
-                                button_color='#0099ff')],
+                                button_color='#0077ff')],
                     [sg.Button(task_list[1],
                                 expand_y=True,
                                 expand_x=True,
                                 key='task2',
                                 font=('Arial',18),
-                                button_color='#0099ff')],
+                                button_color='#0077ff')],
                     [sg.Button(task_list[2],
                                 expand_y=True,
                                 expand_x=True,
                                 key='task3',
                                 font=('Arial',18),
-                                button_color='#0099ff')],
+                                button_color='#0077ff')],
                     [sg.Button(task_list[3],
                                 expand_y=True,
                                 expand_x=True,
                                 key='task4',
                                 font=('Arial',18),
-                                button_color='#0099ff')],
+                                button_color='#0077ff')],
                     [sg.Button(task_list[4],
                                 expand_y=True,
                                 expand_x=True,
                                 key='task5',
                                 font=('Arial',18),
-                                button_color='#0099ff')]
+                                button_color='#0077ff')]
                     ],
-                    size=(480, 1080), key='tasks', pad=((0,0),(0,0))
+                    size=(400, 1080), key='tasks', pad=((0,0),(0,0))
                 ) 
 
 
@@ -175,7 +175,7 @@ sg.theme('DarkBlue')
 
 window = sg.Window('DAIRY TASK MANAGER',
                     layout,
-                    no_titlebar=True,
+                    no_titlebar=False,
                     location=(0,0),
                     margins=(0,0),
                     resizable=True

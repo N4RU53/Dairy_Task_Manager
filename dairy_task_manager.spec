@@ -28,7 +28,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='dairy_task_manager',
+    name='Dairy_task_manager',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
