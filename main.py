@@ -1,61 +1,54 @@
 # coding: utf-8
 
+# pyinstaller main.py --onefile --name Dairy_task_manager --noconsole --clean
+
+
 '''
-デイリータスク管理アプリケーション
-・画面に常に表示させておく状態を想定
-・ターミナルを模したUIからタスクの追加、変更、削除をコマンド形式で可能に(最大４つ)
-・HELPコマンドの実装
-・ボタンを押下することでボタン色変化の要領でタスク完了を可視化
+デイリータスク管理and操作ターミナルアプリケーション(完全個人仕様)
+・ターミナルを模したUIからタスクの追加、変更、削除をコマンド形式で可能に(最大４つ) ・・・clear
+・HELPコマンドの実装 ・・・clear
+・ボタンを押下することでボタン色変化の要領でタスク完了を可視化 ・・・clear
 ・毎日朝6:00にタスク完了状態を更新
 ・コマンドから更新時間の変更、更新の有無等も変更可能に
-・起動時、前回のタスク設定保持（別ファイル管理IO）
+・起動時、前回のタスク設定保持（別ファイル管理IO） ・・・clear
 
 '''
 
-
-from audioop import add
-from turtle import window_width
 import PySimpleGUI as sg
-from sqlalchemy import false
 
  
 #======================== Define functions ==========================
 
 def command(text, window):
 
-    global change_flag
-    global change_tnum_flag
-    global helps
+    global change_task_flag, change_task_tnum_flag, helps
 
-    print('COMMAND_INPUTED >>>  ' + text)
+    print(' COMMAND_INPUTED >>>  ' + text)
     window['input'].update('')
 
-    if text == '/exit':
-        ans = sg.popup_ok_cancel('アプリを閉じますか？', title = '')
-        if ans == 'OK':
-            window.close()
-        else:
-            print('Exit Canceled.')
+    if text == 'exit':
+        window.close()
 
-    elif text == '/change':
-        print('''タスクを変更します
-変更したいタスク番号を入力してください
->>> ''', end='')
-        change_flag = True
-        change_tnum_flag = True
+    elif text == 'change':
+        print(''' タスクを変更します
+ 変更したいタスク番号を入力してください
+ >>> ''', end='')
+        change_task_flag = True
+        change_task_tnum_flag = True
     
-    elif text == '/reset':
+    elif text == 'reset':
         for i in range(5):
             num = str(i+1)
-            window['task' + num].update(button_color='#00bfff') 
-        print('タスクの進捗をリセットしました')
+            window['task' + num].update(button_color='#0099ff') 
+        print(' タスクの進捗をリセットしました\n')
 
-    elif text == '/help':
+    elif text == 'help':
         print(helps)
 
-
+    elif text == '':
+        pass
     else:
-        print('Invalid Command. /help to check commands.')
+        print(' Invalid Command. /help to check commands.\n')
 
 
 
@@ -63,96 +56,111 @@ def command(text, window):
 
 def change_task(text, window):
 
-    global change_flag 
-    global change_tnum_flag
-    global task_num
+    global change_task_flag, change_task_tnum_flag, task_num, task_list_path, task_list
 
     window['input'].update('')
 
-    if change_tnum_flag == True:
+    if change_task_tnum_flag == True:
 
         if text == '1' or text == '2' or text == '3' or  text == '4' or text == '5':
             task_num = text
-            print('\n新しいタスクの内容を入力してください\n>>> ',end='')
-            change_tnum_flag = False
+            print('\n 新しいタスクの内容を入力してください\n>>> ',end='')
+            change_task_tnum_flag = False
         else:
-            print('\nERROR：1~5の数字を入力してください')
+            print('\n ERROR：1~5の数字を入力してください\n>>> ')
 
     else:
+        task_list[int(task_num)-1] = text
+        with open(task_list_path, mode='w', encoding='utf-8') as f:
+            f.write('\n'.join(task_list))
         window['task' + task_num].update(text)
-        print('タスクの内容を「' + text + '」に変更しました')
-        change_flag = False
+        print(' タスクの内容を「' + text + '」に変更しました\n')
+        change_task_flag = False
+
 
 
 
 
 #==================== Define global Variables ======================
-change_flag = False
-change_tnum_flag = False
+change_task_flag = False
+change_task_tnum_flag = False
 task_num = '1'
 
+task_list_path = 'data/tasks.txt'
 
+with open(task_list_path, encoding='utf-8') as f:
+    task_list = [s.strip() for s in f.readlines()]
 
 
 helps = '''
-===================================================================
- **** helps for commands ****
+ ===================================================================
+  **** helps for commands ****
 
-   /help - check command list and how to
+   help - check command list and how to
 
-   /change - change the task 
+   change - change the task 
 
-   /reset - reset task progress
+   reset - reset task progress
 
-   /exit - close this app
+   exit - close this app
 
-===================================================================
+ ===================================================================
+
+
 '''
 
 
 #======================== Define Lauout =============================
 term = [
             [sg.Output(pad=((0,0),(0,0)),
-                        text_color='white',
-                        background_color='black',
+                        text_color='#ffffff',
+                        background_color='#2b0020',
                         echo_stdout_stderr=True,
+                        font=('Arial',11),
                         key='output')],
-            [sg.Text('Input >>> '),
-             sg.InputText(key='input',
+            [sg.Text('Input >>> ', font=('Arial',12)),
+             sg.Input(key='input',
                         size=(80,None),
                         expand_x=True,
-                        pad=((0,0),(0,0)))]
+                        pad=((0,5),(0,0)),
+                        focus=True)]
        ]
+
 
 tasks = sg.Frame('',
                     [
-                    [sg.Button('1.設定されていません', 
+                    [sg.Button(task_list[0], 
                                 expand_y=True,
                                 expand_x=True,
                                 key='task1',
-                                button_color='#00bfff')],
-                    [sg.Button('2.設定されていません',
+                                font=('Arial',18),
+                                button_color='#0099ff')],
+                    [sg.Button(task_list[1],
                                 expand_y=True,
                                 expand_x=True,
                                 key='task2',
-                                button_color='#00bfff')],
-                    [sg.Button('3.設定されていません',
+                                font=('Arial',18),
+                                button_color='#0099ff')],
+                    [sg.Button(task_list[2],
                                 expand_y=True,
                                 expand_x=True,
                                 key='task3',
-                                button_color='#00bfff')],
-                    [sg.Button('4.設定されていません',
+                                font=('Arial',18),
+                                button_color='#0099ff')],
+                    [sg.Button(task_list[3],
                                 expand_y=True,
                                 expand_x=True,
                                 key='task4',
-                                button_color='#00bfff')],
-                    [sg.Button('5.設定されていません',
+                                font=('Arial',18),
+                                button_color='#0099ff')],
+                    [sg.Button(task_list[4],
                                 expand_y=True,
                                 expand_x=True,
                                 key='task5',
-                                button_color='#00bfff')]
+                                font=('Arial',18),
+                                button_color='#0099ff')]
                     ],
-                    size=(480, 1080), key='tasks'
+                    size=(480, 1080), key='tasks', pad=((0,0),(0,0))
                 ) 
 
 
@@ -167,7 +175,7 @@ sg.theme('DarkBlue')
 
 window = sg.Window('DAIRY TASK MANAGER',
                     layout,
-                    no_titlebar=False,
+                    no_titlebar=True,
                     location=(0,0),
                     margins=(0,0),
                     resizable=True
@@ -178,13 +186,13 @@ window['output'].expand(expand_x=True, expand_y=True)
 window['input'].bind("<Return>", "_Enter")
 
 
-print('''#############################################################
+print(''' #############################################################
 
        Dairy Tasks Manager by N4RU53.
        Version 0.0.1 all right reserved.
 
-#############################################################\n''')
-
+ #############################################################\n
+ Type \'help\' to refer command list.\n\n''')
 
 
 #======================== Main Loop ============================
@@ -195,7 +203,7 @@ while True:
         break
 
     elif event == 'input' + '_Enter':
-        if change_flag == True:
+        if change_task_flag == True:
             change_task(values['input'], window)
 
         else:
