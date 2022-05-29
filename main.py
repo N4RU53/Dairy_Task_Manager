@@ -175,7 +175,7 @@ sg.theme('DarkBlue')
 
 window = sg.Window('DAIRY TASK MANAGER',
                     layout,
-                    no_titlebar=False,
+                    no_titlebar=True,
                     location=(0,0),
                     margins=(0,0),
                     resizable=True
